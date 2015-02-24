@@ -85,6 +85,14 @@ Using the bindings for Marko, you can bind a widget to a rendered DOM element us
 </div>
 ```
 
+You can also choose to leave the value of the `w-bind` attribute empty. If the value of `w-bind` is empty then `marko-widgets` will search for a widget module by first checking to see if `widget.js` exists and then `index.js`. Example:
+
+```html
+<div class="my-component" w-bind>
+    <h1>Click Me</h1>
+</div>
+```
+
 The widget bound to the `<div>` should then be implemented as a CommonJS module that exports a constructor function. During client-side initialization, a new instance of your widget will be created for each rendered DOM element that the widget is bound to. A sample widget implementation is shown in the following JavaScript code:
 
 __src/pages/index/widget.js:__
@@ -105,7 +113,7 @@ Widget.prototype = {
     }
 };
 
-module.exports = Widget;
+exports.Widget = Widget;
 ```
 
 In order for everything to work on the client-side we need to include the code for the `marko-widgets` module and the `./widget.js` module as part of the client bundle and we also need to use the custom `<init-widgets>` tag to let the client know which widgets rendered on the server need to be initialized on the client. To include the client-side dependencies will be using the [optimizer](https://github.com/raptorjs/optimizer) module and the taglib that it provides. Our final page template is shown below:
@@ -141,8 +149,8 @@ __src/pages/index/optimizer.json:__
 ```javascript
 {
     "dependencies": [
-        "require marko-widgets",
-        "require ./widget"
+        "require: marko-widgets",
+        "require: ./widget"
     ]
 }
 ```
@@ -189,7 +197,7 @@ function Widget(config) {
     console.log(config.message); // Output: 'Hello World'
 }
 
-module.exports = Widget;
+exports.Widget = Widget;
 ```
 
 __Option 2) As a `widgetConfig` property of the input data model for a Marko template:__
@@ -199,7 +207,7 @@ _renderer.js:_
 ```javascript
 var template = require('marko').load(require.resolve('./template.marko'));
 
-module.exports = function render(input, out) {
+exports.renderer = function(input, out) {
     template.render({
             widgetConfig: {
                 message: 'Hello World'
@@ -224,7 +232,7 @@ function Widget(config) {
     console.log(config.message); // Output: 'Hello World'
 }
 
-module.exports = Widget;
+exports.Widget = Widget;
 ```
 
 ## Referencing Widgets
@@ -300,9 +308,136 @@ Option 2) Use the `this.$()` method:
 var $submitButton = this.$('#submitButton');
 ```
 
+## Attaching DOM Event Listeners
+
+Marko Widgets supports custom `w-on*` attributes for "attaching" DOM event listeners.
+
+```html
+<div w-bind>
+	<form w-onsubmit="handleFormSubmit">
+		<input type="text" value="email" w-onchange="handleEmailChange">
+		<button>Submit</button>
+	</form>
+</div>
+```
+
+The containing widget should have a method named `handleButtonClick`. For example:
+
+```javascript
+function Widget() {
+
+}
+
+Widget.prototype = {
+	handleFormSubmit: function(event, el) {
+		event.preventDefault();
+		// ...
+	},
+
+	handleEmailChange: function(event, el) {
+		var email = el.value;
+		this.validateEmail(email);
+		// ...
+	},
+
+	validateEmail: function(email) {
+		// ...
+	}
+}
+
+exports.Widget = Widget;
+```
+
+NOTE: Event handler methods will be invoked with `this` being the widget instance and the following two arguments will be provided to the handler method:
+
+1. `event` - The raw DOM event object (e.g. `event.target`, `event.clientX`, etc.)
+2. `el` - The element that the listener was attached to (which can be different from `event.target` due to bubbling)
+
+
+Internally, Marko Widgets only adds one event listener to the root `document.body` element for each event type that bubbles. When Marko Widgets captures an event on `document.body` it will internally delegate the event to the appropriate widgets. For DOM events that do not bubble, Marko Widgets will automatically attach DOM event listeners to each of the DOM nodes. If a widget is destroyed, Marko Widgets will automatically do the appropriate cleanup to remove DOM event listeners.
+
 ## Rendering Widgets in the Browser
 
-TODO
+Marko Widgets provides an API that can be used to create a `render(input[, callback])` function given a renderer:
+
+```javascript
+function renderer(input, out) {
+	// ...
+}
+
+require('marko-widgets').renderable(exports, renderer);
+```
+
+The `renderable` method will modify the target object to add a new `render(input[, callback])` method that can be used to render the widget. In addition, the `renderable` method will also store the provided renderer in the `renderer` property of the target object.
+
+An object that is made renderable, can then be rendered on the client as shown below:
+
+_Synchronous render_:
+
+```javascript
+var widget = require('fancy-checkbox').render({
+		checked: true,
+		label: 'Foo'
+	})
+	.appendTo(document.body)
+	.getWidget();
+
+widget.setChecked(false);
+widget.setLabel('Bar');
+```
+
+_Asynchronous render_:
+
+```javascript
+require('fancy-checkbox').render({
+		checked: true,
+		label: 'Foo'
+	},
+	function(err, renderResult) {
+		if (err) {
+			// ...
+		}
+
+		var widget = renderResult
+			.appendTo(document.body)
+			.getWidget();
+
+		widget.setChecked(false);
+		widget.setLabel('Bar');
+	});
+```
+
+## Rendering Widgets on the Server
+
+If a UI component is rendered on the server then that means that the HTML will be produced on the server and that separate JavaScript code will need to run in the browser to bind behavior to the widgets associated with the UI components rendered on the server. Marko Widgets keeps track of the rendered widgets associated with an ["out"](https://github.com/raptorjs/async-writer). The following code illustrates how to get the JavaScript code needed to initialize widgets in the browser:
+
+```javascript
+var markoWidgets = require('marko-widgets');
+var template = require('marko').load(require.resolve('./template.marko'));
+
+module.exports = function(req, res) {
+	template.render(viewModel, function(err, html, out) {
+		var initWidgetsCode = markoWidgets.getInitWidgetsCode(out);
+
+		// Serialize the HTML and the JavaScript code to the browser
+		res.json({
+	            html: html,
+	            js: initWidgetsCode
+	        });
+	});
+}
+```
+
+And then, in the browser, the following code can be used to initialize the widgets:
+
+```javascript
+var result = JSON.parse(response.body);
+var html = result.html
+var js = result.js;
+
+document.body.innerHTML = html; // Add the HTML to the DOM
+eval(js); // Initialize the widgets to bind behavior!
+```
 
 # API
 
@@ -463,3 +598,26 @@ var submitButton = this.widgets.submitButton;
 ### Properties
 
 #### this.*
+
+# Changelog
+
+See [CHANGELOG.md](CHANGELOG.md)
+
+# Discuss
+
+Chat channel: [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/raptorjs/marko-widgets?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
+Questions or comments can also be posted on the [RaptorJS Google Groups Discussion Forum](http://groups.google.com/group/raptorjs).
+
+# Contributors
+
+* [Patrick Steele-Idem](https://github.com/patrick-steele-idem) (Twitter: [@psteeleidem](http://twitter.com/psteeleidem))
+* [Phillip Gates-Idem](https://github.com/philidem/) (Twitter: [@philidem](https://twitter.com/philidem))
+
+# Contribute
+
+Pull Requests welcome. Please submit Github issues for any feature enhancements, bugs or documentation problems.
+
+# License
+
+Apache License v2.0

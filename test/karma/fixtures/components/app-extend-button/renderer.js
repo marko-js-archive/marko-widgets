@@ -1,6 +1,6 @@
 var template = require('marko').load(require.resolve('./template.marko'));
 
-module.exports = function render(input, out) {
+exports.render = function(input, out) {
 
     var rootAttrs = {};
 
@@ -45,7 +45,7 @@ module.exports = function render(input, out) {
             label: input.label
         },
         type: type,
-        invokeBody: input.invokeBody, // invokeBody is a function we can use to render nested
+        renderBody: input.renderBody, // renderBody is a function we can use to render nested
                                       // content. will be undefined if no nested content.
         label: input.label, // The button label can come from nested content or the label attribute
         rootAttrs: rootAttrs

@@ -95,7 +95,14 @@ exports.process =function (node, compiler, template) {
             // Handle the "w-extend" attribute
             delete props['w-extend'];
             widgetArgs.extend = widgetExtend;
-            widgetArgs.extendConfig = template.makeExpression('data.widgetConfig');
+
+            var extendConfig = props['w-config'];
+
+            if (extendConfig) {
+                widgetArgs.extendConfig = template.makeExpression(extendConfig);
+            } else {
+                widgetArgs.extendConfig = template.makeExpression('data.widgetConfig');
+            }
         } else if ((widgetElIdExpression = props['w-el-id'])) {
             // Handle the "w-el-id" attribute
             if (node.hasAttribute('id')) {

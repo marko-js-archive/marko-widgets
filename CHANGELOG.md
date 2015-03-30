@@ -1,9 +1,121 @@
 CHANGELOG
 =========
 
+# Upgrade Guide
+
+## v2 to v3
+
+With marko-widgets, `this.widgets.foo` is no longer support and `this.widgets` will be `null`. Instead, you should `this.getWidget('foo')`.
+
+## v1 to v2
+
+marko-widgets v2 introduced the potential for a circular dependency. To avoid problems, you should no longer use `module.exports` in your widget JavaScript module as shown below:
+
+_Old widget.js:_
+
+```javascript
+function Widget() {
+    // ...
+}
+
+Widget.prototype = {
+    // ...
+};
+
+module.exports = Widget;
+```
+
+_New widget.js:_
+
+```javascript
+function Widget() {
+
+}
+
+Widget.prototype = {
+
+};
+
+exports.Widget = Widget;
+```
+
+You should also do the same for your UI component renderer:
+
+_Old renderer.js:_
+
+```javascript
+module.exports = function render(input, out) {
+    // ...
+}
+```
+
+_New renderer.js:_
+
+```javascript
+exports.renderer = function(input, out) {
+    // ...
+}
+```
+
+# 3.x
+
+## 3.0.x
+
+### 3.0.0
+
+- :exclamation: Removed support for `this.widgets.foo` (use `this.getWidget('foo')` instead)
+- Added support for repeated DOM elements and repeated widgets:
+
+```html
+<div class="my-component" w-bind="./widget">
+    <ul>
+		<li w-id="todoListeItems[]" for="todoItem in data.todoItems">
+			<app-todo-item w-id="todoItems[]" todo-item="todoItem"/>
+		</li>
+	</ul>
+</div>
+```
+
+```javascript
+var todoListeItems = this.getEls('todoListeItems');
+var todoItemWidgets = this.getWidgets('todoItems');
+```
+
+- Added new methods:
+    - `getEls(id)`
+    - `getWidgets(id)`
+
 # 2.x
 
 ## 2.0.x
+
+### 2.0.12
+
+- Deprecate `w-el-id` in favor of `w-id`
+
+### 2.0.11
+
+- Internal code cleanup
+
+### 2.0.10
+
+- Fixed #19 - Allow `w-on` for custom widget events
+
+### 2.0.9
+
+- Fixed #18 - Widgets in async blocks now initialize in the correct order
+
+### 2.0.8
+
+- Fixed #17 - Allow `w-config` with `w-extend`
+
+### 2.0.7
+
+- Internal: use 'renderBody(out)' instead of `invokeBody()`
+
+### 2.0.6
+
+- Introduced `require('marko-widgets').render(renderer, input)`
 
 ### 2.0.5
 

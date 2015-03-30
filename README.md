@@ -3,14 +3,16 @@ marko-widgets
 
 [![Build Status](https://travis-ci.org/raptorjs/marko-widgets.svg?branch=master)](https://travis-ci.org/raptorjs/marko-widgets) [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/raptorjs/marko-widgets?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-The `marko-widgets` module provides a simple and efficient mechanism for binding behavior to UI components rendered on either the server or in the browser. This module also supports inter-widget communication and provides a simple framework that encourages best practices and makes it easy to "wire up" complex applications. Out of the box, bindings are provided for [Marko](https://github.com/raptorjs/marko) and [Dust](https://github.com/linkedin/dustjs). There is no complex widget class hierarchy or complex API and you are free to use jQuery or any other library for working with the DOM.
+The `marko-widgets` module provides a simple and efficient mechanism for binding behavior to UI components rendered on either the server or in the browser. This module also supports inter-widget communication and provides a simple framework that encourages best practices and makes it easy to "wire up" complex applications. There is no complex widget class hierarchy or complex API and you are free to use jQuery or any other library for working with the DOM.
 
 ![eBay Open Source](https://raw.githubusercontent.com/raptorjs/optimizer/master/images/ebay.png)
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
 # Table of Contents
 
+- [Sample Code](#sample-code)
 - [Installation](#installation)
 - [Glossary](#glossary)
 - [Usage](#usage)
@@ -18,7 +20,11 @@ The `marko-widgets` module provides a simple and efficient mechanism for binding
 	- [Widget Config](#widget-config)
 	- [Referencing Widgets](#referencing-widgets)
 	- [Referencing Widget DOM Elements](#referencing-widget-dom-elements)
+	- [Attaching Event Listeners](#attaching-event-listeners)
+		- [Attaching Custom Event Listeners](#attaching-custom-event-listeners)
+		- [Attaching DOM Event Listeners](#attaching-dom-event-listeners)
 	- [Rendering Widgets in the Browser](#rendering-widgets-in-the-browser)
+	- [Rendering Widgets on the Server](#rendering-widgets-on-the-server)
 - [API](#api)
 	- [Widget](#widget)
 		- [Methods](#methods)
@@ -49,8 +55,76 @@ The `marko-widgets` module provides a simple and efficient mechanism for binding
 			- [forEach([id], callback)](#foreachid-callback)
 		- [Properties](#properties-1)
 			- [this.*](#this)
+- [Changelog](#changelog)
+- [Discuss](#discuss)
+- [Contributors](#contributors)
+- [Contribute](#contribute)
+- [License](#license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+# Sample Code
+
+Marko Widgets allows you to declaratively bind behavior to an HTML element inside a Marko template. The widget provides the client-side behavior for your UI component. A sample Marko template is shown below:
+
+```html
+<div w-bind="./widget">
+	<app-overlay title="My Overlay"
+		w-id="overlay"
+		w-onBeforeHide="handleOverlayBeforeHide">
+
+		Content for overlay.
+	</app-overlay>
+
+	<button type="button"
+		w-onclick="handleShowButtonClick">
+		Show Overlay
+	</button>
+
+	<button type="button"
+		w-onclick="handleHideButtonClick">
+		Hide Overlay
+	</button>
+
+	<button type="button"
+		w-onclick="handleDestroyButtonClick">
+		Destroy Overlay
+	</button>
+</div>
+```
+
+Below is the content of `widget.js` where the widget type is defined:
+
+```javascript
+function Widget() {
+	var el = this.el; // el will be the raw DOM element your widget is bound to
+}
+
+Widget.prototype = {
+    handleShowButtonClick: function(event) {
+		console.log('Showing overlay...');
+        this.getWidget('overlay').show();
+    },
+
+    handleHideButtonClick: function(event) {
+		console.log('Hiding overlay...');
+        this.getWidget('overlay').hide();
+    },
+
+    handleDestroyButtonClick: function(event) {
+		// Permanently remove the overlay out of the DOM while
+		// also doing proper cleanup.
+        this.getWidget('overlay').destroy();
+		console.log('Overlay destroyed!');
+    },
+
+    handleOverlayBeforeHide: function(event) {
+        console.log('The overlay is about to be hidden!');
+    }
+};
+
+exports.Widget = Widget;
+```
 
 # Installation
 
@@ -173,7 +247,7 @@ In the above example, the final HTML will be similar to the following:
 </html>
 ```
 
-:arrow_forward: To try out and experiment with this code please see the documentation and source code for the [widgets-bind-behavior](https://github.com/raptorjs/raptor-samples/tree/master/widgets-bind-behavior) sample app.
+To try out and experiment with this code please see the documentation and source code for the [widgets-bind-behavior](https://github.com/raptorjs/raptor-samples/tree/master/widgets-bind-behavior) sample app.
 
 ## Widget Config
 
@@ -235,9 +309,9 @@ function Widget(config) {
 exports.Widget = Widget;
 ```
 
-## Referencing Widgets
+## Referencing Nested Widgets
 
-The `marko-widgets` taglib also provides support for allowing a widget to communicate directly with nested widgets. A nested widget can be assigned a widget ID (only needs to be unique within the scope of the containing widget) and the containing widget can then reference the nested widget by the assigned widget ID using the `this.widgets` collection.
+The `marko-widgets` taglib also provides support for allowing a widget to communicate directly with nested widgets. A nested widget can be assigned a widget ID (only needs to be unique within the scope of the containing widget) and the containing widget can then reference the nested widget by the assigned widget ID using the `this.getWidget(id)` method.
 
 The following HTML template fragment contains a widget that has three nested [sample-button](https://github.com/raptorjs/raptor-sample-ui-components/tree/master/components/sample-button) widgets. Each nested [sample-button](https://github.com/raptorjs/raptor-sample-ui-components/tree/master/components/sample-button) is assigned an ID (i.e. `primaryButton`, `successButton` and `dangerButton`).
 
@@ -252,25 +326,44 @@ The following HTML template fragment contains a widget that has three nested [sa
 </div>
 ```
 
-The containing widget can then refer to a particular nested widget as shown in the following sample JavaScript code:
+The containing widget can then reference a particular nested widget as shown in the following sample JavaScript code:
 
 ```javascript
-this.widgets.dangerButton.on('click', function() {
+this.getWidget('dangerButton').on('click', function() {
     alert('You clicked on the danger button!');
 });
 ```
 
+Marko Widgets also supports referencing _repeated_ nested widgets as shown below:
+
+```html
+<div class="my-component" w-bind="./widget">
+    <ul>
+		<li for="todoItem in data.todoItems">
+			<app-todo-item w-id="todoItems[]" todo-item="todoItem"/>
+		</li>
+	</ul>
+</div>
+```
+
+The containing widget can then reference the repeated todo item widgets using the `this.getWidgets(id)` method as shown below:
+
+```javascript
+var todoItemWidgets = this.getWidgets('todoItems');
+// todoItemWidgets will be an Array of todo item widgets
+```
+
 To try out and experiment with this code please see the documentation and source code for the [widgets-communication](https://github.com/raptorjs/raptor-samples/tree/master/widgets-communication) sample app.
 
-## Referencing Widget DOM Elements
+## Referencing Nested DOM Elements
 
-DOM elements nested within a widget can be given unique IDs based on the containing widget's ID. These DOM elements can then be efficiently looked up by the containing widget using methods provided. The `w-el-id` custom attribute can be used to assign DOM element IDs to HTML elements that are prefixed with the widget's ID. For example, given the following HTML template fragment:
+DOM elements nested within a widget can be given unique IDs based on the containing widget's ID. These DOM elements can then be efficiently looked up by the containing widget using methods provided. The `w-id` custom attribute can be used to assign DOM element IDs to HTML elements that are prefixed with the widget's ID. For example, given the following HTML template fragment:
 
 ```html
 <form w-bind="./widget">
     ...
-    <button type="submit" w-el-id="submitButton">Submit</button>
-    <button type="button" w-el-id="cancelButton">Cancel</button>
+    <button type="submit" w-id="submitButton">Submit</button>
+    <button type="button" w-id="cancelButton">Cancel</button>
 </form>
 ```
 
@@ -293,7 +386,7 @@ var cancelButton = this.getEl('cancelButton'); // cancelButton.id === 'w123-canc
 submitButton.style.border = '1px solid red';
 ```
 
-The object returned by `this.getEl()` will be a raw [HTML element](https://developer.mozilla.org/en-US/docs/Web/API/element). If you want a jQuery wrapped element you can do either of the following:
+The object returned by `this.getEl(id)` will be a raw [HTML element](https://developer.mozilla.org/en-US/docs/Web/API/element). If you want a jQuery wrapped element you can do either of the following:
 
 
 Option 1) Use jQuery directly:
@@ -308,9 +401,33 @@ Option 2) Use the `this.$()` method:
 var $submitButton = this.$('#submitButton');
 ```
 
-## Attaching DOM Event Listeners
+Marko Widgets also supports referencing _repeated_ nested DOM elements as shown below:
 
-Marko Widgets supports custom `w-on*` attributes for "attaching" DOM event listeners.
+```html
+<ul>
+	<li for="color in ['red', 'green', 'blue']"
+		w-id="colorListItems[]">
+		$color
+	</li>
+</ul>
+```
+
+The containing widget can then reference the repeated DOM elements using the `this.getEls(id)` method as shown below:
+
+```javascript
+var colorListItems = this.getEls('colorListItems');
+// colorListItems will be an Array of raw DOM <li> elements
+```
+
+## Adding Event Listeners
+
+Marko Widgets supports attaching event listeners to nested DOM elements and nested widgets. Event listeners can either be registered declaratively in the Marko template or in JavaScript code.
+
+### Adding DOM Event Listeners
+
+A widget can subscribe to events on a nested DOM element.
+
+Listeners can be attached declaratively as shown in the following sample code:
 
 ```html
 <div w-bind>
@@ -321,7 +438,7 @@ Marko Widgets supports custom `w-on*` attributes for "attaching" DOM event liste
 </div>
 ```
 
-The containing widget should have a method named `handleButtonClick`. For example:
+And then in the widget:
 
 ```javascript
 function Widget() {
@@ -354,7 +471,126 @@ NOTE: Event handler methods will be invoked with `this` being the widget instanc
 2. `el` - The element that the listener was attached to (which can be different from `event.target` due to bubbling)
 
 
-Internally, Marko Widgets only adds one event listener to the root `document.body` element for each event type that bubbles. When Marko Widgets captures an event on `document.body` it will internally delegate the event to the appropriate widgets. For DOM events that do not bubble, Marko Widgets will automatically attach DOM event listeners to each of the DOM nodes. If a widget is destroyed, Marko Widgets will automatically do the appropriate cleanup to remove DOM event listeners.
+For performance reasons, Marko Widgets only adds one event listener to the root `document.body` element for each event type that bubbles. When Marko Widgets captures an event on `document.body` it will internally delegate the event to the appropriate widgets. For DOM events that do not bubble, Marko Widgets will automatically add DOM event listeners to each of the DOM nodes. If a widget is destroyed, Marko Widgets will automatically do the appropriate cleanup to remove DOM event listeners.
+
+You can also choose to add listeners in JavaScript code by assigning an "element id" to the nested DOM element (only needs to be unique within the scope of the containing widget) so that the nested DOM element can be referenced by the containing widget. The scoped widget element ID should be assigned using the `w-id="<id>"` attribute. For example, in the template:
+
+```html
+<div w-bind>
+	<form w-id="form">
+		<input type="text" value="email" w-id="email">
+		<button>Submit</button>
+	</form>
+</div>
+```
+
+And then in the widget:
+
+```javascript
+function Widget() {
+	var self = this;
+
+	var formEl = this.getEl('form');
+	formEl.addEventListener('submit', function(event) {
+		self.handleFormSubmit(event, formEl)
+	});
+
+	// Or use jQuery if that is loaded on your page:
+	var emailEl = this.getEl('email');
+	$(emailEl).on('change', function(event) {
+		self.handleEmailChange(event, emailEl)
+	});
+}
+
+Widget.prototype = {
+	handleFormSubmit: function(event, el) {
+		event.preventDefault();
+		// ...
+	},
+
+	handleEmailChange: function(event, el) {
+		var email = el.value;
+		this.validateEmail(email);
+		// ...
+	},
+
+	validateEmail: function(email) {
+		// ...
+	}
+}
+
+exports.Widget = Widget;
+```
+
+### Adding Custom Event Listeners
+
+A widget can subscribe to events on nested widgets. Every widget extends [EventEmitter](http://nodejs.org/api/events.html#events_class_events_eventemitter) and this allows each widget to emit events.
+
+Listeners can be attached declaratively as shown in the following sample code:
+
+```html
+<div w-bind="./widget">
+	<app-overlay title="My Overlay"
+		w-onBeforeHide="handleOverlayBeforeHide">
+
+		Content for overlay
+
+	</app-overlay>
+</div>
+```
+
+And then in the widget:
+
+```javascript
+function Widget() {
+}
+
+Widget.prototype = {
+    handleOverlayBeforeHide: function(event) {
+        console.log('The overlay is about to be hidden!');
+    }
+};
+
+exports.Widget = Widget;
+```
+
+You can also choose to add listeners in JavaScript code by assigning an "id" to the nested widget (only needs to be unique within the scope of the containing widget) so that the nested widget can be referenced by the containing widget. The scoped widget ID should be assigned using the `w-id="<id>"` attribute. For example, in the template:
+
+```html
+<div w-bind="./widget">
+	<app-overlay title="My Overlay"
+		w-id="myOverlay">
+
+		Content for overlay
+
+	</app-overlay>
+</div>
+```
+
+And then in the widget:
+
+```javascript
+function Widget() {
+	var self = this;
+
+	var myOverlay = this.getWidget('myOverlay');
+
+	this.subscribeTo(myOverlay)
+		.on('beforeHide', function(event) {
+			self.handleOverlayBeforeHide(event);
+		});
+}
+
+Widget.prototype = {
+    handleOverlayBeforeHide: function(event) {
+        console.log('The overlay is about to be hidden!');
+    }
+};
+
+exports.Widget = Widget;
+```
+
+NOTE: `subscribeTo(eventEmitter)` is used to ensure proper cleanup if the subscribing widget is destroyed.
 
 ## Rendering Widgets in the Browser
 
@@ -545,11 +781,23 @@ Emits an event. This method is inherited from EventEmitter (see [Node.js Events:
 
 #### getEl(widgetElId)
 
-Returns a nested DOM element by prefixing the provided `widgetElId` with the widget's ID. For Marko, nested DOM elements should be assigned an ID using the `w-el-id` custom attribute.  Returns `this.el` if no `widgetElId` is provided.
+Returns a nested DOM element by prefixing the provided `widgetElId` with the widget's ID. For Marko, nested DOM elements should be assigned an ID using the `w-id` custom attribute.  Returns `this.el` if no `widgetElId` is provided.
+
+#### getEls(id)
+
+Returns an Array of _repeated_ `DOM` elements for the given ID. Repeated DOM elements must have a value for the `w-id` attribute that ends with `[]` (e.g., `w-id="myDivs[]"`)
 
 #### getElId(widgetElId)
 
-Similar to `getEl`, but only returns the String ID of the DOM element instead of the actual DOM element.
+Similar to `getEl`, but only returns the String ID of the nested DOM element instead of the actual DOM element.
+
+#### getWidget(id[, index])
+
+Returns a reference to a nested `Widget` for the given ID. If an `index` is provided and the target widget is a repeated widget (e.g. `w-id="myWidget[]"`) then the widget at the given index will be returned.
+
+#### getWidgets(id)
+
+Returns an Array of _repeated_ `Widget` instances for the given ID. Repeated widgets must have a value for the `w-id` attribute that ends with `[]` (e.g., `w-id="myWidget[]"`)
 
 #### insertAfter(targetEl)
 
@@ -580,24 +828,6 @@ The root [HTML element](https://developer.mozilla.org/en-US/docs/Web/API/element
 #### this.id
 
 The String ID of the root [HTML element](https://developer.mozilla.org/en-US/docs/Web/API/element) that the widget is bound to.
-
-#### this.widgets
-
-An instance of `WidgetCollection` (see below) that holds references to all nested widgets with an assigned widget ID (e.g., but using the `w-id` custom attribute). For example:
-
-```javascript
-var submitButton = this.widgets.submitButton;
-```
-
-## WidgetCollection
-
-### Methods
-
-#### forEach([id], callback)
-
-### Properties
-
-#### this.*
 
 # Changelog
 

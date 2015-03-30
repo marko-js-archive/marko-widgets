@@ -1,39 +1,39 @@
-exports.widgetArgs = function (out, assignedId, scope, events, extend, extendConfig) {
-    var global = out.global;
-    var data = out.data;
-    var existingWidgetArgs = data.widgetArgs;
-    var extendParts = null;
+require('raptor-polyfill/string/endsWith');
 
-    if (!global.__widgetsBeginAsyncAdded) {
-        global.__widgetsBeginAsyncAdded = true;
-        out.on('beginAsync', function(event) {
-            var parentAsyncWriter = event.parentWriter;
-            var asyncWriter = event.writer;
-            asyncWriter.data.widgetArgs = parentAsyncWriter.data.widgetArgs;
-        });
-    }
+var repeatedId = require('../lib/repeated-id');
+
+exports.widgetArgs = function (out, scope, assignedId, customEvents, extend, extendConfig) {
+    var data = out.data;
+    var widgetArgs = data.widgetArgs;
+    var extendParts = null;
 
     if (extend) {
         extendParts = [extend, extendConfig];
     }
 
-    if (existingWidgetArgs) {
+    if (widgetArgs) {
+
+        // Merge in the extends...
         if (extendParts) {
-            if (existingWidgetArgs.extend) {
+            if (widgetArgs.extend) {
                 // The nested extends should come before the outer extends
                 // since the extends are applied from left to right and the
                 // outer widget will expect for the inner widget to have been
                 // patched
-                existingWidgetArgs.extend = extendParts.concat(existingWidgetArgs.extend);
+                widgetArgs.extend = extendParts.concat(widgetArgs.extend);
             } else {
-                existingWidgetArgs.extend = extendParts;
+                widgetArgs.extend = extendParts;
             }
         }
     } else {
+        if (assignedId && assignedId.endsWith('[]')) {
+            assignedId = repeatedId.nextId(out, scope, assignedId);
+        }
+
         data.widgetArgs = {
-            id: assignedId,
+            id: assignedId ? scope + '-' + assignedId : null,
             scope: scope,
-            events: events,
+            customEvents: customEvents,
             extend: extendParts
         };
     }

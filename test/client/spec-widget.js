@@ -1,3 +1,4 @@
+require('jquery');
 var chai = require('chai');
 var expect = chai.expect;
 var util = require('./util');

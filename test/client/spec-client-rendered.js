@@ -1,10 +1,12 @@
+var $ = require('jquery');
 var chai = require('chai');
 var expect = chai.expect;
 var util = require('./util');
 
 describe('client-rendered' , function() {
     before(function() {
-        require('raptor-dom').removeChildren(document.getElementById('server'));
+        $('<div id="target"></div>').appendTo($('body'));
+        //require('raptor-dom').removeChildren(document.getElementById('server'));
     });
 
     beforeEach(function() {

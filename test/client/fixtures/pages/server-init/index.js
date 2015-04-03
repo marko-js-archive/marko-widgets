@@ -12,7 +12,7 @@ out.on('error', function(err) {
 }).on('finish', function() {
     var output = out.getOutput();
     var result = {
-        html: output.replace(/\n/g, '\\n').replace(/'/g, '\\\'').replace(/<script.*?<\/script>/g, ''),
+        html: output.replace(/\n/g, '\\n').replace(/'/g, '\\\'').replace(/\\u/g, '\\\\u').replace(/<script.*?<\/script>/g, ''),
         js: output.match(/<script.*?<\/script>/g).map(
             function (match) {
                 return match.replace(/<script.*?>/g, '').replace('</script>', '');

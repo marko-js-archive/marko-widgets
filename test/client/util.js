@@ -1,4 +1,18 @@
+require('jquery');
+
+require('marko-widgets');
+
+require('./fixtures/components/app-foo/widget');
+require('./fixtures/components/app-bar/widget');
+require('./fixtures/components/app-dom-events/widget');
+require('./fixtures/components/app-dom-events-jquery/widget');
+require('./fixtures/components/app-extend-checkbox/widget');
+require('./fixtures/components/app-widget-config/widget');
+require('./fixtures/components/app-init-async/widget');
+require('./fixtures/components/app-fixed-id/widget');
+
 require('chai').Assertion.includeStack = true;
+
 
 function cleanup() {
 

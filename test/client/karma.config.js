@@ -4,7 +4,8 @@ module.exports = function (config) {
         frameworks: [
             'optimizer',
             'mocha',
-            'chai'
+            'chai',
+            'marko-html-content'
         ],
         files: [
             'spec-*.js'
@@ -19,7 +20,8 @@ module.exports = function (config) {
             'karma-firefox-launcher',
             'karma-safari-launcher',
             'karma-opera-launcher',
-            'karma-ie-launcher'
+            'karma-ie-launcher',
+            require('./marko-html-content')
         ],
         browsers: [
             'PhantomJS'
@@ -37,7 +39,6 @@ module.exports = function (config) {
             cacheProfile: 'development',
             tempdir: './.test'
         },
-        contentStream: require('./content-stream'),
         colors: false,
         autoWatch: false,
         singleRun: true,
@@ -63,6 +64,6 @@ module.exports = function (config) {
                 'x-ua-compatible': 'IE=EmulateIE8'
             }
         },
-        logLevel: 'DEBUG'
+        logLevel: config.LOG_DEBUG
     });
 };

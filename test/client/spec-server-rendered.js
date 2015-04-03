@@ -1,27 +1,12 @@
-require('jquery');
-require('marko-widgets');
+var util = require('./util');
+
 var chai = require('chai');
 var expect = chai.expect;
 
-var util = require('./util');
-
 describe('server-rendered' , function() {
-    //beforeEach(function(done) {
-    //    if (window.__karma !== false) {
-    //        util.cleanup();
-    //        var pageOutput = require('./karma/generated/page-server-init.json' + '');
-    //        var html = pageOutput.html;
-    //        var js = pageOutput.js;
-    //
-    //        var targetEl = util.targetEl;
-    //        targetEl.innerHTML = html;
-    //
-    //        eval(js);
-    //    }
-    //
-    //    done();
-    //});
-
+    before(function () {
+        beforeServerTests();
+    });
     it('[server-rendered] should correctly initialize widgets', function() {
         expect(window.testData.widgets['app-foo'].length).to.equal(3);
         expect(window.testData.widgets['app-foo'][0]).to.be.a('object');
@@ -96,7 +81,7 @@ describe('server-rendered' , function() {
             number: 12,
             boolean: true,
             complex: {
-                a: '<\"hello">',
+                a: 'hello',
                 b: 'test'
             }
         });
@@ -111,7 +96,7 @@ describe('server-rendered' , function() {
             number: 12,
             boolean: true,
             complex: {
-                a: '<\"hello">',
+                a: 'hello',
                 b: 'test'
             }
         });

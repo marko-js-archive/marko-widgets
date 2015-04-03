@@ -1,18 +1,21 @@
+
+var util = require('./util');
 var $ = require('jquery');
 var chai = require('chai');
 var expect = chai.expect;
-var util = require('./util');
-
 describe('client-rendered' , function() {
-    before(function() {
-        $('<div id="target"></div>').appendTo($('body'));
-        //require('raptor-dom').removeChildren(document.getElementById('server'));
+    var widgets = null;
+    before(function () {
+        widgets = window.testData.widgets;
     });
-
+    after(function() {
+        window.testData.widgets = widgets;
+    });
     beforeEach(function() {
-        util.cleanup();
+        $('#target').remove();
+        $('<div id="target"></div>').appendTo($('body'));
+        window.testData.widgets = {};
     });
-
     it('[client-rendered] should allow this.$() to be used to attach DOM event listeners', function() {
 
         var widget = require('./fixtures/components/app-dom-events-jquery')
@@ -120,7 +123,7 @@ describe('client-rendered' , function() {
             number: 12,
             boolean: true,
             complex: {
-                a: '<\"hello">',
+                a: 'hello',
                 b: 'test'
             }
         });
@@ -157,7 +160,7 @@ describe('client-rendered' , function() {
             number: 12,
             boolean: true,
             complex: {
-                a: '<\"hello">',
+                a: 'hello',
                 b: 'test'
             }
         });

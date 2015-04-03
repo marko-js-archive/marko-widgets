@@ -4,18 +4,11 @@ var $ = require('jquery');
 var chai = require('chai');
 var expect = chai.expect;
 describe('client-rendered' , function() {
-    var widgets = null;
-    before(function () {
-        widgets = window.testData.widgets;
-    });
-    after(function() {
-        window.testData.widgets = widgets;
-    });
-    beforeEach(function() {
-        $('#target').remove();
-        $('<div id="target"></div>').appendTo($('body'));
-        window.testData.widgets = {};
-    });
+
+    before(util.clientTests.before);
+    after(util.clientTests.after);
+    beforeEach(util.clientTests.beforeEach);
+
     it('[client-rendered] should allow this.$() to be used to attach DOM event listeners', function() {
 
         var widget = require('./fixtures/components/app-dom-events-jquery')

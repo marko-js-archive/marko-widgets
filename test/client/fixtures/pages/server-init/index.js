@@ -12,7 +12,9 @@ out.on('error', function(err) {
 }).on('finish', function() {
     var output = out.getOutput();
     var result = {
+        // separate out all the html content from JavaScript
         html: output.replace(/\n/g, '\\n').replace(/'/g, '\\\'').replace(/\\u/g, '\\\\u').replace(/<script.*?<\/script>/g, ''),
+        // merge JavaScripts to one js code
         js: output.match(/<script.*?<\/script>/g).map(
             function (match) {
                 return match.replace(/<script.*?>/g, '').replace('</script>', '');
@@ -20,13 +22,6 @@ out.on('error', function(err) {
         ).join(';')
     };
     fs.writeFileSync(filePath,
-        '   window.testData = {\n' +
-        '       widgets: {},\n' +
-        '       addWidget: function(name, widget) {\n' +
-        '           var widgetList = window.testData.widgets[name] || (window.testData.widgets[name] = []);\n' +
-        '           widgetList.push(widget);\n' +
-        '       }\n' +
-        '   };\n' +
         'function beforeServerTests() {\n' +
         '   window.testData.widgets = {}\n' +
         '   var el = document.createElement("div");\n' +

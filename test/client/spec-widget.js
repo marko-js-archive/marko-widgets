@@ -6,18 +6,11 @@ var chai = require('chai');
 var expect = chai.expect;
 
 describe('widget' , function() {
-    var widgets = null;
-    before(function () {
-        widgets = window.testData.widgets;
-    });
-    after(function() {
-        window.testData.widgets = widgets;
-    });
-    beforeEach(function() {
-        $('#target').remove();
-        $('<div id="target"></div>').appendTo($('body'));
-        window.testData.widgets = {};
-    });
+
+    before(util.clientTests.before);
+    after(util.clientTests.after);
+    beforeEach(util.clientTests.beforeEach);
+
     it('should create widgets with the expected properties', function() {
 
         var widget = require('./fixtures/components/app-foo')

@@ -1,8 +1,6 @@
 'use strict';
 var path = require('path');
-var fs = require('fs-extra');
 var util = require('util');
-
 // framework
 var framework = function (emitter, config, logger) {
     var log = logger.create('framework:marko-html-content');

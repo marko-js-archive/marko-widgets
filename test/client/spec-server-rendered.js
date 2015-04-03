@@ -1,12 +1,13 @@
 var util = require('./util');
-
 var chai = require('chai');
 var expect = chai.expect;
 
 describe('server-rendered' , function() {
     before(function () {
-        beforeServerTests();
+        // this function is exposed from the generated JavaSript file generated in fixtures/pages/server-init/index.js
+        beforeServerTests()
     });
+
     it('[server-rendered] should correctly initialize widgets', function() {
         expect(window.testData.widgets['app-foo'].length).to.equal(3);
         expect(window.testData.widgets['app-foo'][0]).to.be.a('object');

@@ -1,4 +1,4 @@
-// karma.conf.js
+// The karma config file.
 module.exports = function (config) {
     config.set({
         frameworks: [

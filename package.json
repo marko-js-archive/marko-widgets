@@ -8,9 +8,7 @@
     "scripts": {
         "test": "npm run test-server -s && npm run test-client -s && node_modules/.bin/jshint lib/ dust/ dust/",
         "test-server": "node_modules/.bin/mocha --ui bdd --reporter spec ./test",
-        "test-client": "node test/client/mocha-phantomjs/run.js",
-        "mocha-phantomjs": "node test/client/mocha-phantomjs/run.js",
-        "mocha-phantomjs-run": "mocha-phantomjs ./test/client/mocha-phantomjs/generated/test-page.html"
+        "test-client": "cd ./test/client && rm -rf ./.test && karma start karma.config.js"
     },
     "author": "Patrick Steele-Idem <pnidem@gmail.com>",
     "maintainers": "Patrick Steele-Idem <pnidem@gmail.com>",

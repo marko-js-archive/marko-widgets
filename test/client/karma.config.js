@@ -64,6 +64,6 @@ module.exports = function (config) {
                 'x-ua-compatible': 'IE=EmulateIE8'
             }
         },
-        logLevel: config.LOG_DEBUG
+        logLevel: config.LOG_DISABLE
     });
 };

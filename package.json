@@ -9,7 +9,8 @@
         "test": "npm run test-server -s && npm run test-client -s && node_modules/.bin/jshint lib/ dust/ dust/",
         "test-server": "node_modules/.bin/mocha --ui bdd --reporter spec ./test",
         "test-client": "cd ./test/client && rm -rf ./.test && karma start karma.config.js",
-        "client-watch": "cd ./test/client && rm -rf ./.test && karma start karma.config.js --auto-watch --no-single-run"
+        "coverage-client": "cd ./test/client && rm -rf ./.coverage && karma start karma.coverage.config.js",
+        "watch-client": "cd ./test/client && rm -rf ./.test && karma start karma.config.js --auto-watch --no-single-run"
     },
     "author": "Patrick Steele-Idem <pnidem@gmail.com>",
     "maintainers": "Patrick Steele-Idem <pnidem@gmail.com>",

@@ -19,3 +19,4 @@ coverage
 /test/client/mocha-phantomjs/.cache
 .cache
 .test
+.coverage

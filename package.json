@@ -57,8 +57,8 @@
         "raptor-args": "^1.0.2",
         "raptor-strings": "^1.0.0",
         "karma-optimizer": "^0.0",
-        "execSync": "*",
-        "fs-extra": "*"
+        "execSync": "^1.0",
+        "fs-extra": "^0"
     },
     "license": "Apache License v2.0",
     "bin": {},

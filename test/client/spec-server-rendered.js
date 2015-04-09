@@ -82,7 +82,7 @@ describe('server-rendered' , function() {
             number: 12,
             boolean: true,
             complex: {
-                a: '</"hello">',
+                a: '<\"hello">',
                 b: 'test'
             }
         });
@@ -97,7 +97,7 @@ describe('server-rendered' , function() {
             number: 12,
             boolean: true,
             complex: {
-                a: '</"hello">',
+                a: '<\"hello">',
                 b: 'test'
             }
         });

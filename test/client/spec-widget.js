@@ -1,11 +1,15 @@
-var chai = require('chai');
-var expect = chai.expect;
 var util = require('./util');
 
+var $ = require('jquery');
+var chai = require('chai');
+
+var expect = chai.expect;
+
 describe('widget' , function() {
-    beforeEach(function() {
-        util.cleanup();
-    });
+
+    before(util.clientTests.before);
+    after(util.clientTests.after);
+    beforeEach(util.clientTests.beforeEach);
 
     it('should create widgets with the expected properties', function() {
 

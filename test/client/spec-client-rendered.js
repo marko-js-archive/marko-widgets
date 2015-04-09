@@ -1,15 +1,13 @@
+
+var util = require('./util');
+var $ = require('jquery');
 var chai = require('chai');
 var expect = chai.expect;
-var util = require('./util');
-
 describe('client-rendered' , function() {
-    before(function() {
-        require('raptor-dom').removeChildren(document.getElementById('server'));
-    });
 
-    beforeEach(function() {
-        util.cleanup();
-    });
+    before(util.clientTests.before);
+    after(util.clientTests.after);
+    beforeEach(util.clientTests.beforeEach);
 
     it('[client-rendered] should allow this.$() to be used to attach DOM event listeners', function() {
 

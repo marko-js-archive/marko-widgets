@@ -37,7 +37,12 @@ module.exports = function (config) {
             bundlingEnabled: false,
             resolveCssUrls: true,
             cacheProfile: 'development',
-            tempdir: './.test'
+            tempdir: './.test',
+            watch: {
+                defaultIgnore: false,
+                ignore: '../node_modules/marko-widgets/node_modules/**/*.js',
+                files: '../node_modules/marko-widgets/**/*'
+            }
         },
         colors: false,
         autoWatch: false,

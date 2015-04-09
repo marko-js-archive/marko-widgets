@@ -40,7 +40,9 @@ module.exports = function (config) {
             cacheProfile: 'development',
             tempdir: './.coverage',
             coverage: {
-                files: 'src/**/*.js',
+                defaultIgnore:false,
+                ignore: '../node_modules/marko-widgets/node_modules/**/*.js',
+                files: '../node_modules/marko-widgets/**/*.js',
                 reporters: [
                     {
                         type: 'json',

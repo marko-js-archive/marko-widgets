@@ -239,6 +239,18 @@ exports.renderer = function(input, out) {
 
 ## 5.3.x
 
+### v5.3.6
+
+- Fix for #137 - Widget no longer re-renders after it is destroyed
+
+### v5.3.5
+
+- Fixed #128
+
+### v5.3.1
+
+- Replacing falsey check from `this.shouldUpdate`
+
 ### v5.3.0
 
 - Fixes [#121](https://github.com/marko-js/marko-widgets/issues/121) - Allow for w-preserve-attrs to enable preservation of attributes:

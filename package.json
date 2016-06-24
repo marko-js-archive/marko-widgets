@@ -19,7 +19,7 @@
   "dependencies": {
     "events": "^1.0.2",
     "lasso-modules-client": "^1.0.0",
-    "listener-tracker": "^1.0.2",
+    "listener-tracker": "^1.1.0",
     "morphdom": "^1.0.1",
     "raptor-async": "^1.1.2",
     "raptor-dom": "^1.1.0",
@@ -64,5 +64,5 @@
     "./lib/init-widgets.js": "./lib/init-widgets-browser.js",
     "./lib/defineWidget.js": "./lib/defineWidget-browser.js"
   },
-  "version": "6.1.2"
+  "version": "6.2.0"
 }

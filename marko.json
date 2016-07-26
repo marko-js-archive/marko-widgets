@@ -163,5 +163,9 @@
         ]
 
 
+    },
+    "<widgets-configure>": {
+        "renderer":"./taglib/widgets-configure-tag.js",
+        "@serialize-state": "boolean"
     }
 }

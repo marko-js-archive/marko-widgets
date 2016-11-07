@@ -3,7 +3,23 @@ CHANGELOG
 
 # 6.x
 
+## 6.4.x
+
+### v6.4.0
+
+- Back porting [marko PR #402](https://github.com/marko-js/marko/pull/402) - Bug on jQuery Proxy when `w-id` contains dash/hyphen
+
 ## 6.3.x
+
+### v6.3.7
+
+- Fixed [#165](https://github.com/marko-js/marko-widgets/issues/165) - `event-delegation.js:44 Uncaught TypeError: Cannot read property '__widget' of null`
+- add cspNonce support
+
+### v6.3.6
+
+- Fixed [#163](https://github.com/marko-js/marko-widgets/issues/163) - `w-for` was not being removed
+- Testing: Use phantomjs-prebuilt binary when launching mocha-phantomjs
 
 ### v6.3.5
 

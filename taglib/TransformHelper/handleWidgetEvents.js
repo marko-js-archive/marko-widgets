@@ -72,6 +72,8 @@ function addDirectEventListener(transformHelper, eventType, targetMethod) {
         builder.identifier('widget'),
         builder.identifier('addDomEvent'));
 
+    transformHelper.assignWidgetId(true /* repeated */);
+
     var addDomEventFunctionCall = builder.functionCall(
         addDomEvent,
         [

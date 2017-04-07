@@ -1,6 +1,8 @@
 Marko Widgets
 =============
 
+> **DEPRECATED:** Marko Widgets has been merged into Marko 4.0 and widgets are now referred to as components.  See the new [components](http://markojs.com/docs/components/) docs on [markojs.com](http://markojs.com/).
+
 [![Build Status](https://travis-ci.org/marko-js/marko-widgets.svg?branch=master)](https://travis-ci.org/marko-js/marko-widgets)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/marko-js/marko-widgets)
 [![NPM](https://img.shields.io/npm/v/marko-widgets.svg)](https://www.npmjs.com/package/marko-widgets)
@@ -8,7 +10,7 @@ Marko Widgets
 
 ![Marko Logo](https://raw.githubusercontent.com/marko-js/branding/master/marko-logo-small.png)
 
-Marko Widgets extends the [Marko templating engine](https://github.com/marko-js/marko) to provide a simple and efficient mechanism for binding behavior to UI components rendered on either the server or in the browser. Learn more at [http://markojs.com/docs/marko-widgets/](http://markojs.com/docs/marko-widgets/).
+Marko Widgets extends the [Marko templating engine](https://github.com/marko-js/marko) to provide a simple and efficient mechanism for binding behavior to UI components rendered on either the server or in the browser. Learn more at [http://markojs.com/docs/marko-widgets/](http://v3.markojs.com/docs/marko-widgets/).
 
 # Changelog
 
@@ -16,7 +18,7 @@ See [CHANGELOG.md](CHANGELOG.md)
 
 # Discuss
 
-Chat channel: [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/marko-js/marko-widgets?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+Chat channel: [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/marko-js/marko?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Questions or comments can also be posted on the [Marko Widgets Github issues](https://github.com/marko-js/marko-widgets/issues) page.
 

@@ -1,0 +1,7 @@
+<script marko-init>
+    var util = require('./util');
+</script>
+
+<await(promise from util.getPromise()) client-reorder>
+    <invoke data.renderBody(out)/>
+</await>

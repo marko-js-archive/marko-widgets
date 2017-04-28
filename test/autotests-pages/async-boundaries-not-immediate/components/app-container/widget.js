@@ -1,0 +1,2 @@
+exports.Widget = function(config) {
+};

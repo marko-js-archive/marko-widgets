@@ -18,8 +18,6 @@ var markoWidgets = require('../');
 var WidgetContext = markoWidgets.WidgetsContext;
 
 module.exports = function render(input, out) {
-    var widgetsContext = markoWidgets.getWidgetsContext(out);
-
     var options = input.immediate ? {immediate: true} : null;
 
     if (input.immediate === true) {
@@ -33,19 +31,16 @@ module.exports = function render(input, out) {
         out.on('await:finish', function(eventArgs) {
             var asyncFragmentOut = eventArgs.out;
 
-            var widgetsContext = asyncFragmentOut.data.widgets || asyncFragmentOut.global.widgets;
+            var widgetsContext = asyncFragmentOut.data.widgets;
             if (widgetsContext) {
-                markoWidgets.writeInitWidgetsCode(widgetsContext, asyncFragmentOut, options);
+                markoWidgets.writeInitWidgetsCode(asyncFragmentOut, options, widgetsContext);
             }
         });
     }
 
     var asyncOut = out.beginAsync({ last: true, timeout: -1 });
     out.onLast(function(next) {
-        if (widgetsContext.hasWidgets()) {
-            markoWidgets.writeInitWidgetsCode(widgetsContext, asyncOut, options);
-        }
-
+        markoWidgets.writeInitWidgetsCode(asyncOut, options);
         asyncOut.end();
         next();
     });

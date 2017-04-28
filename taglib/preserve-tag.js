@@ -46,7 +46,7 @@ module.exports = function render(input, out) {
                     out.write('<' + tagName + ' id="' + id + '"></' + tagName + '>');
                 }
 
-                widgetsContext.addPreservedDOMNode(existingEl, bodyOnly);
+                widgetsContext.globalWidgetsContext.addPreservedDOMNode(existingEl, bodyOnly);
                 return;
             }
         }

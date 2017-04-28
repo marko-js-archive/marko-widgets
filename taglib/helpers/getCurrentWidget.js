@@ -21,12 +21,12 @@
  * @return {WidgetDef} The WidgetDef instance
  */
 module.exports = function getCurrentWidget(out) {
-    var widgets = out.global.widgets;
-    if (!widgets) {
+    var widgetsContext = out.data.widgets;
+    if (!widgetsContext) {
         throw new Error('No widget found');
     }
 
-    var widget = widgets.getCurrentWidget();
+    var widget = widgetsContext.getCurrentWidget();
     if (!widget) {
         throw new Error('No widget found');
     }

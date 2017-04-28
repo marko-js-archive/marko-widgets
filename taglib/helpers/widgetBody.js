@@ -26,7 +26,7 @@ module.exports = function widgetBody(out, id, content, widget) {
             var existingEl = document.getElementById(id);
             if (existingEl) {
                 var widgetsContext = markoWidgets.getWidgetsContext(out);
-                widgetsContext.addPreservedDOMNode(existingEl, true /* body only */);
+                widgetsContext.globalWidgetsContext.addPreservedDOMNode(existingEl, true /* body only */);
             }
         }
     } else if (typeof content === 'function') {

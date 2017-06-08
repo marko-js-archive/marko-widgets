@@ -12,7 +12,7 @@ Marko Widgets extends the [Marko templating engine](https://github.com/marko-js/
 
 # Changelog
 
-See [CHANGELOG.md](CHANGELOG.md)
+See [CHANGELOG.md](https://github.com/marko-js/marko-widgets/blob/master/CHANGELOG.md)
 
 # Discuss
 

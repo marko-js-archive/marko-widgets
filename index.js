@@ -1,1 +1,1 @@
-module.exports = require('marko/components/legacy');
+module.exports = require('marko/legacy-components');

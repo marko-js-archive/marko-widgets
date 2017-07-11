@@ -12,7 +12,7 @@
     "raptor-renderer": "^1.4.4"
   },
   "peerDependencies": {
-    "marko": "^4.0.0"
+    "marko": "^4.4.0"
   },
   "license": "Apache-2.0",
   "bin": {},

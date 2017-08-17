@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
+var complain = require('complain');
+
 module.exports = function handleWidgetExtend() {
     var el = this.el;
+    var context = this.context;
 
     if (!el.hasAttribute('w-extend')) {
         return;
     }
 
+    complain('The w-extend attribute is deprecated. See https://github.com/marko-js/marko/issues/392', { location:context.getPosInfo(el.pos).toString() });
+
     var extendAttr = el.getAttribute('w-extend');
 
     var modulePath;
     var widgetArgs = this.getWidgetArgs();
-    var context = this.context;
     var builder = this.builder;
 
     if (extendAttr.value == null) {

@@ -16,6 +16,8 @@
  */
 'use strict';
 
+var complain = require('complain');
+
 module.exports = function handleWidgetBind() {
     var el = this.el;
     var context = this.context;
@@ -27,6 +29,16 @@ module.exports = function handleWidgetBind() {
     }
 
     // A widget is bound to the el...
+
+    if (context.data.hasBind) {
+        complain('Support for multiple widgets bound in a file is removed in Marko 4.', { location:context.getPosInfo(el.pos).toString() });
+    }
+
+    context.data.hasBind = true;
+
+    if (el.parentNode.type !== 'TemplateRoot') {
+        complain('The w-bind attribute should be used on the root element of the template. See https://github.com/marko-js/marko-widgets/issues/95', { location:context.getPosInfo(el.pos).toString() });
+    }
 
     // Remove the w-bind attribute since we don't want it showing up in the output DOM
     el.removeAttribute('w-bind');

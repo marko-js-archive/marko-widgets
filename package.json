@@ -17,6 +17,7 @@
   "author": "Patrick Steele-Idem <pnidem@gmail.com>",
   "maintainers": "Patrick Steele-Idem <pnidem@gmail.com>",
   "dependencies": {
+    "complain": "^1.0.0",
     "events": "^1.0.2",
     "lasso-modules-client": "^1.0.0",
     "listener-tracker": "^1.0.2",
@@ -57,7 +58,8 @@
     "phantomjs-prebuilt": "^2.1.13",
     "promise-polyfill": "^6.0.2",
     "raptor-args": "^1.0.2",
-    "raptor-strings": "^1.0.0"
+    "raptor-strings": "^1.0.0",
+    "sinon": "^3.2.0"
   },
   "license": "Apache-2.0",
   "bin": {},

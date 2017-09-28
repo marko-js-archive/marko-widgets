@@ -36,10 +36,6 @@ module.exports = function handleWidgetBind() {
 
     context.data.hasBind = true;
 
-    if (el.parentNode.type !== 'TemplateRoot') {
-        complain('The w-bind attribute should be used on the root element of the template. See https://github.com/marko-js/marko-widgets/issues/95', { location:context.getPosInfo(el.pos).toString() });
-    }
-
     // Remove the w-bind attribute since we don't want it showing up in the output DOM
     el.removeAttribute('w-bind');
 

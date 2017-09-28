@@ -5,7 +5,7 @@ module.exports = function codeGenerator(el, codegen) {
     var builder = codegen.builder;
     var context = codegen.context;
 
-    complain('The <widget-types> tag is deprecated. See https://github.com/marko-js/marko/issues/514', { location:context.getPosInfo(el.pos).toString() })
+    complain('The <widget-types> tag is deprecated. See https://github.com/marko-js/marko/issues/514', { location:context.getPosInfo(el.pos).toString() });
 
     var attrs = el.getAttributes();
 

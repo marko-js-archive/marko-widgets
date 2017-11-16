@@ -8,7 +8,7 @@ Marko Widgets
 
 ![Marko Logo](https://raw.githubusercontent.com/marko-js/branding/master/marko-logo-small.png)
 
-Marko Widgets extends the [Marko templating engine](https://github.com/marko-js/marko) to provide a simple and efficient mechanism for binding behavior to UI components rendered on either the server or in the browser. Learn more at [http://markojs.com/docs/marko-widgets/](http://markojs.com/docs/marko-widgets/).
+Marko Widgets extends the [Marko templating engine](https://github.com/marko-js/marko) to provide a simple and efficient mechanism for binding behavior to UI components rendered on either the server or in the browser. Learn more at [http://v3.markojs.com/docs/marko-widgets/](http://v3.markojs.com/docs/marko-widgets/).
 
 # Changelog
 
